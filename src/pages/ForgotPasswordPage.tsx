@@ -148,7 +148,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center bg-gradient-to-r from-blue-600 to-emerald-500 text-white py-4 rounded-xl hover:opacity-90 transition duration-300 transform hover:scale-[1.02] active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4 rounded-xl hover:opacity-90 transition duration-300 transform hover:scale-[1.02] active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <span className="animate-pulse">Enviando...</span>
