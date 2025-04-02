@@ -4,7 +4,6 @@ import TopNavbar from '../components/TopNavbar';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../pages/Dashboard';
 import MeuCadastro from '../pages/MeuCadastro';
-import {NotificationProvider} from "../components/ui/NotificationProvider.tsx";
 
 export function PrivateRoutes() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,7 +30,7 @@ export function PrivateRoutes() {
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-0 md:p-4 lg:p-6">
           <div className="bg-white rounded-xl shadow-sm h-full overflow-y-auto">
             <Routes>
-              <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/meu-cadastro" element={<MeuCadastro />} />
 
               {/* Default redirect for authenticated routes */}

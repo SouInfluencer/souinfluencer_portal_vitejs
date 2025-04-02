@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { CheckCircle, AlertTriangle, Info, X, Bell } from 'lucide-react';
 import type { Notification } from './types';
 

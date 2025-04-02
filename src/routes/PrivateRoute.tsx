@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import {AuthService} from "../services/authService.ts";
 
 // List of public authentication pages
 const PUBLIC_AUTH_PAGES = [
@@ -15,7 +15,7 @@ interface PrivateRouteProps {
 }
 
 export function PrivateRoute({ children }: PrivateRouteProps) {
-    const { isAuthenticated } = useAuth();
+
     const location = useLocation();
 
     // Check if the current path is a public authentication page
@@ -29,7 +29,7 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
     }
 
     // For non-public routes, check authentication
-    if (!isAuthenticated) {
+    if (! AuthService.isAuthenticated()) {
         // Redirect to login page, but save the current location they were trying to access
         return <Navigate to="/login" state={{ from: location }} replace />;
     }

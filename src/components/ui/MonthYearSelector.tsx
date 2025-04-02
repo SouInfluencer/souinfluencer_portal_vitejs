@@ -1,7 +1,6 @@
-import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, addMonths, subMonths } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR } from 'date-fns/locale/pt-BR';
 
 interface MonthYearSelectorProps {
   selectedDate: Date;

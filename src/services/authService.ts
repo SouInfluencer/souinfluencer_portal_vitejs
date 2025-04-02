@@ -47,10 +47,28 @@ export class AuthService {
 
   static login(credentials: LoginCredentials): Promise<LoginResponse> {
     return api.post<LoginResponse>('/auth', credentials)
-      .then(response => {
-        this.saveUserData(response.data);
-        return response.data;
-      });
+        .then(response => {
+          this.saveUserData(response.data);
+          // Adiciona verificação de salvamento
+          const savedToken = localStorage.getItem('userToken');
+          const savedUser = localStorage.getItem('userData');
+
+          if (!savedToken || !savedUser) {
+            throw new Error('Failed to save authentication data');
+          }
+
+          return response.data;
+        })
+        .catch(error => {
+          // Limpa os dados em caso de erro
+          this.logout();
+          throw error;
+        });
+  }
+
+  static isAuthenticated(): boolean {
+    const token = localStorage.getItem('userToken');
+    return !!token; // Retorna true se o token existir
   }
 
   static logout() {

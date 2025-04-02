@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Download } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -19,7 +19,7 @@ export function PWAInstallPrompt() {
 
   useEffect(() => {
     // Check if the device is iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(isIOSDevice);
 
     // Handle PWA install prompt for non-iOS devices
@@ -32,7 +32,7 @@ export function PWAInstallPrompt() {
     window.addEventListener('beforeinstallprompt', handler);
 
     // Show prompt for iOS devices if not already installed
-    if (isIOSDevice && !window.navigator.standalone) {
+    if (isIOSDevice && !(navigator as Navigator & { standalone?: boolean }).standalone) {
       setShowPrompt(true);
     }
 

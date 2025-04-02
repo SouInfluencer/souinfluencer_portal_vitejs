@@ -3,8 +3,7 @@ import Login from '../pages/Login';
 import MultiStepSignup from '../pages/MultiStepSignup';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ChangePasswordPage from '../pages/ChangePasswordPage';
-import {NotificationContext, NotificationProvider} from "../components/ui/NotificationProvider.tsx";
-import {useContext, useEffect} from "react";
+import {NotificationProvider} from "../components/ui/NotificationProvider.tsx";
 
 export function PublicRoutes() {
   return (

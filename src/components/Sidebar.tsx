@@ -12,7 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 // Define a more comprehensive menu item type
 interface MenuItem {
-  icon: React.ComponentType<{ size?: number, className?: string }>;
+  icon: React.ComponentType<{ size?: string | number, className?: string }>;
   text: string;
   path: string;
   section?: 'main' | 'secondary';
@@ -55,7 +55,7 @@ const menuItems: MenuItem[] = [
 export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
 
   // Enhanced navigation handler with optional close on mobile
   const handleNavigation = (path: string) => {

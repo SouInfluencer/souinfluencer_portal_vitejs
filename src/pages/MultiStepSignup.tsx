@@ -2,14 +2,15 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, Megaphone, ChevronRight, ChevronLeft,
-  CheckCircle, Mail, Lock, User, Eye, EyeOff, Loader
+  CheckCircle, Mail, Lock, Eye, EyeOff, Loader
 } from 'lucide-react';
 
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { UserService } from '../services/userService';
 import { AuthService } from '../services/authService';
-import { toast, Toaster } from 'react-hot-toast';
+import {NotificationComponent} from "../components/ui/NotificationComponent.tsx";
+import {Card, CardContent, CardFooter, CardHeader} from "../components/ui/Card.tsx";
 
 // Types Definition
 type AccountType = 'INFLUENCER' | 'ADVERTISER';
@@ -56,6 +57,15 @@ const MultiStepSignup: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   // Username Availability Check
   const checkUsernameAvailability = useCallback(async (): Promise<boolean> => {
@@ -185,51 +195,58 @@ const MultiStepSignup: React.FC = () => {
   }, [currentStep]);
 
   // Form Submission
+  // Form Submission
   const handleSubmit = useCallback(async () => {
-    // Ensure final validation before submission
-    if (await validateStep(4)) {
-      setIsLoading(true);
-      setErrors({});
+    if (!(await validateStep(4))) return;
 
-      try {
-        // Attempt user signup
-        const signupResponse = await UserService.signup(signupData);
+    setIsLoading(true);
+    setErrors({});
 
-        // If signup is successful, attempt login
-        try {
-          const loginResponse = await AuthService.login({
-            email: signupData.email,
-            password: signupData.password
-          });
+    try {
+      // 1. Primeiro faz o cadastro
+      await UserService.signup(signupData);
 
-          // Navigate to dashboard on successful login
-          toast.success('Cadastro realizado com sucesso!');
-          navigate('/dashboard', {
-            state: {
-              message: 'Bem-vindo à plataforma!'
-            }
-          });
-        } catch (loginError: any) {
-          // If login fails, but signup was successful
-          console.error('Login Error:', loginError);
-          toast.success('Cadastro realizado. Por favor, faça login.');
-          navigate('/login');
-        }
-      } catch (signupError: any) {
-        // Handle signup error
-        console.error('Signup Error:', signupError);
+      // 2. Depois faz o login automático
+      await AuthService.login({
+        email: signupData.email,
+        password: signupData.password
+      });
 
-        // Set a general error message, or use the specific error message from the backend
-        setErrors(prev => ({
-          ...prev,
-          general: signupError.message || 'Erro ao cadastrar. Tente novamente.'
-        }));
-
-        // Show error toast
-        toast.error(signupError.message || 'Não foi possível realizar o cadastro');
-      } finally {
-        setIsLoading(false);
+      // 3. Verifica se o login foi realmente bem-sucedido
+      if (!AuthService.isAuthenticated()) {
+        throw new Error('Authentication failed after successful login');
       }
+
+      // 4. Mostra notificação e navega
+      setNotification({
+        type: 'success',
+        message: 'Cadastro realizado com sucesso!'
+      });
+
+      // 5. Espera um pouco para mostrar a notificação
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 6. Navega com replace para evitar voltar para a página de cadastro
+      setTimeout(() => navigate('/dashboard', { replace: true }), 1500);
+
+    } catch (error: any) {
+      console.error('Signup error:', error);
+
+      setErrors({
+        general: error.message || 'Erro ao realizar cadastro'
+      });
+
+      setNotification({
+        type: 'error',
+        message: error.message || 'Não foi possível completar o cadastro'
+      });
+
+      // Se foi erro de login após cadastro bem-sucedido, redireciona para login
+      if (error.message.includes('Authentication failed after successful login')) {
+        setTimeout(() => navigate('/login', { replace: true }), 1500);
+      }
+    } finally {
+      setIsLoading(false);
     }
   }, [signupData, navigate, validateStep]);
 
@@ -255,7 +272,7 @@ const MultiStepSignup: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <AccountTypeCard
                     type="INFLUENCER"
-                    icon={Users}
+                    icon={(props) => <Users {...props} />}
                     title="Influenciador"
                     description="Crie conteúdo e expanda sua audiência"
                     isSelected={signupData.profile === 'INFLUENCER'}
@@ -263,7 +280,7 @@ const MultiStepSignup: React.FC = () => {
                 />
                 <AccountTypeCard
                     type="ADVERTISER"
-                    icon={Megaphone}
+                    icon={(props) => <Megaphone {...props} />}
                     title="Anunciante"
                     description="Encontre influenciadores para suas campanhas"
                     isSelected={signupData.profile === 'ADVERTISER'}
@@ -298,7 +315,6 @@ const MultiStepSignup: React.FC = () => {
                       setErrors(prev => ({...prev, username: undefined}));
                     }}
                     error={errors.username}
-                    icon={User}
                     disabled={isCheckingUsername}
                 />
                 {isCheckingUsername && (
@@ -341,16 +357,16 @@ const MultiStepSignup: React.FC = () => {
                     type="email"
                     value={signupData.email}
                     onChange={(e) => {
-                      setSignupData(prev => ({...prev, email: e.target.value}));
-                      setErrors(prev => ({...prev, email: undefined}));
+                      setSignupData((prev) => ({...prev, email: e.target.value}));
+                      setErrors((prev) => ({...prev, email: undefined}));
                     }}
                     error={errors.email}
-                    icon={Mail}
                     disabled={isCheckingEmail}
+                    rightIcon={<Mail className="text-gray-400"/>}
                 />
                 {isCheckingEmail && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      <Loader className="animate-spin text-blue-500" size={20} />
+                      <Loader className="animate-spin text-blue-500" size={20}/>
                     </div>
                 )}
               </div>
@@ -375,8 +391,7 @@ const MultiStepSignup: React.FC = () => {
                     value={signupData.password}
                     onChange={(e) => setSignupData(prev => ({...prev, password: e.target.value}))}
                     error={errors.password}
-                    icon={Lock}
-                    rightIcon={showPassword ? EyeOff : Eye}
+                    rightIcon={showPassword ? <EyeOff/> : <Eye/>}
                     onRightIconClick={() => setShowPassword(!showPassword)}
                 />
                 <Input
@@ -388,7 +403,7 @@ const MultiStepSignup: React.FC = () => {
                       setErrors(prev => ({...prev, confirmPassword: undefined}));
                     }}
                     error={errors.confirmPassword}
-                    icon={Lock}
+                    rightIcon={<Lock/>}
                 />
               </div>
             </div>
@@ -397,12 +412,22 @@ const MultiStepSignup: React.FC = () => {
   };
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-        <Toaster position="top-right" />
-        <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden animate-fade-in">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4 relative">
+        {notification && (
+            <NotificationComponent
+                type={notification.type}
+                message={notification.message}
+                onClose={() => setNotification(null)}
+            />
+        )}
+
+        <Card className="w-full max-w-md bg-white shadow-2xl rounded-3xl border border-blue-100 overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full translate-x-1/2 translate-y-1/2"></div>
+
           {/* Progress Indicator */}
-          <div className="bg-gray-100 py-4 px-6">
-            <div className="flex justify-between items-center space-x-2">
+          <CardHeader className="pb-0 pt-8 px-8">
+            <div className="flex justify-between items-center space-x-2 mb-6">
               {([1, 2, 3, 4] as StepType[]).map((step) => (
                   <div
                       key={step}
@@ -415,10 +440,12 @@ const MultiStepSignup: React.FC = () => {
                   />
               ))}
             </div>
-          </div>
+            <h1 className="text-4xl font-extrabold text-blue-800 mb-2 tracking-tight text-center">
+              Criar conta
+            </h1>
+          </CardHeader>
 
-          {/* Form Content */}
-          <div className="p-8 md:p-10">
+          <CardContent className="p-8 pt-4">
             <form onSubmit={(e) => { e.preventDefault(); goToNextStep(); }}>
               {renderStepContent()}
 
@@ -457,19 +484,17 @@ const MultiStepSignup: React.FC = () => {
                 </Button>
               </div>
             </form>
+          </CardContent>
 
-            {/* Login Link */}
-            <div className="mt-6 text-center text-sm text-gray-600">
-              Já tem uma conta?{' '}
-              <a
-                  href="/login"
-                  className="text-blue-600 font-semibold hover:underline"
-              >
+          <CardFooter className="mt-4 pt-6 border-t border-blue-100 text-center px-8 pb-8">
+            <div className="w-full">
+              <p className="text-gray-500 mb-2 text-sm">Já tem uma conta?</p>
+              <a href="/login" className="text-blue-600 hover:underline font-semibold">
                 Faça login
               </a>
             </div>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       </div>
   );
 };

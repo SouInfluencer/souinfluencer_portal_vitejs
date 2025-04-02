@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useReducer } from 'react';
 import { NotificationToast } from './NotificationToast';
 import type { Notification, NotificationAction } from './types';
 

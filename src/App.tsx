@@ -1,14 +1,13 @@
-import { useAuth } from './contexts/AuthContext';
 import { PublicRoutes } from './routes/PublicRoutes';
 import { PrivateRoutes } from './routes/PrivateRoutes';
 import { NotificationProvider } from './components/ui/NotificationProvider';
+import {AuthService} from "./services/authService.ts";
 
 function App() {
-  const { isAuthenticated } = useAuth();
 
   return (
       <NotificationProvider>
-        {isAuthenticated ? <PrivateRoutes /> : <PublicRoutes />}
+        { AuthService.isAuthenticated() ? <PrivateRoutes /> : <PublicRoutes />}
       </NotificationProvider>
   );
 }

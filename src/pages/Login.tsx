@@ -1,39 +1,14 @@
-import React, { useState } from 'react';
-import { Lock, User, ArrowRight, CheckCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {ArrowRight, Eye, EyeOff, Lock, User} from 'lucide-react';
+import {useAuth} from '../contexts/AuthContext';
+import {useNavigate} from 'react-router-dom';
 import {Card, CardContent, CardFooter, CardHeader} from "../components/ui/Card.tsx";
+import {NotificationComponent} from "../components/ui/NotificationComponent.tsx";
 
-// Interface para as credenciais
 interface LoginCredentials {
   email: string;
   password: string;
 }
-
-// Componente de notificação para reutilização
-const Notification = ({ type, message, onClose }: {
-  type: 'success' | 'error';
-  message: string;
-  onClose: () => void;
-}) => {
-  return (
-      <div
-          className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ease-in-out ${
-              type === 'success' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
-          }`}
-      >
-        {type === 'success' ? <CheckCircle className="mr-2 h-5 w-5" /> : <AlertTriangle className="mr-2 h-5 w-5" />}
-        {message}
-        <button
-            onClick={onClose}
-            className="ml-4 text-sm font-medium text-white underline hover:text-gray-200 transition"
-            aria-label="Fechar notificação"
-        >
-            Fechar
-        </button>
-      </div>
-  );
-};
 
 const LoginPage: React.FC = () => {
   // Estado para as credenciais
@@ -106,7 +81,7 @@ const LoginPage: React.FC = () => {
   return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4 relative">
         {notification && (
-            <Notification
+            <NotificationComponent
                 type={notification.type}
                 message={notification.message}
                 onClose={() => setNotification(null)}

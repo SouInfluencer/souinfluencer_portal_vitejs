@@ -3,7 +3,8 @@ import React, { forwardRef, InputHTMLAttributes } from 'react';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     error?: string;
-    rightIcon?: React.ReactNode; // Adicionando a tipagem correta para ícones
+    rightIcon?: React.ReactNode; // For the right-hand icon
+    onRightIconClick?: () => void; // For handling clicks on right icon
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
