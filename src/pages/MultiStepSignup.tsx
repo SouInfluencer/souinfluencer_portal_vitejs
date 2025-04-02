@@ -213,12 +213,7 @@ const MultiStepSignup: React.FC = () => {
           // If login fails, but signup was successful
           console.error('Login Error:', loginError);
           toast.success('Cadastro realizado. Por favor, faça login.');
-          navigate('/login', {
-            state: {
-              email: signupData.email,
-              message: 'Cadastro concluído. Faça login para continuar.'
-            }
-          });
+          navigate('/login');
         }
       } catch (signupError: any) {
         // Handle signup error

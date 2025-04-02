@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { Lock, User, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import {NotificationContext} from "../components/ui/NotificationProvider.tsx";
+import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const notificationContext = useContext(NotificationContext);
+  if (!notificationContext) {
+    throw new Error('notificationContext must be used within a NotificationProvider');
+  }
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -22,35 +28,36 @@ const LoginPage = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (!email || !password) {
-      showNotification('error', 'Por favor, preencha todos os campos.');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      showNotification('error', 'Por favor, insira um endereço de e-mail válido.');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await login({ 
-        email, 
-        password, 
-        checkme: true 
-      });
-      
-      showNotification('success', 'Login realizado com sucesso!');
-      navigate('/dashboard');
-    } catch (error: any) {
-      showNotification('error', error.message || 'Falha no login. Verifique suas credenciais.');
-    } finally {
-      setIsLoading(false);
-    }
+    toast.success('Assinatura cancelada com sucesso');
+    // e.preventDefault();
+    //
+    // // Basic validation
+    // if (!email || !password) {
+    //   showNotification('error', 'Por favor, preencha todos os campos.');
+    //   return;
+    // }
+    //
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(email)) {
+    //   showNotification('error', 'Por favor, insira um endereço de e-mail válido.');
+    //   return;
+    // }
+    //
+    // setIsLoading(true);
+    // try {
+    //   await login({
+    //     email,
+    //     password,
+    //     checkme: true
+    //   });
+    //
+    //   showNotification('success', 'Login realizado com sucesso!');
+    //   navigate('/dashboard');
+    // } catch (error: any) {
+    //   showNotification('error', error.message || 'Falha no login. Verifique suas credenciais.');
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (

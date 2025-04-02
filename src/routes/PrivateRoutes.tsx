@@ -14,18 +14,17 @@ export function PrivateRoutes() {
   };
 
   return (
-      <NotificationProvider>
-    <div className="flex h-screen overflow-hidden">
+    <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        toggleSidebar={toggleSidebar} 
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Navbar */}
-        <TopNavbar 
-          toggleSidebar={toggleSidebar} 
+        <TopNavbar
+          toggleSidebar={toggleSidebar}
         />
 
         {/* Main content area */}
@@ -34,7 +33,7 @@ export function PrivateRoutes() {
             <Routes>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/meu-cadastro" element={<MeuCadastro />} />
-              
+
               {/* Default redirect for authenticated routes */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -43,6 +42,5 @@ export function PrivateRoutes() {
         </main>
       </div>
     </div>
-      </NotificationProvider>
   );
 }
