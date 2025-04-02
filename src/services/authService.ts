@@ -2,11 +2,16 @@ import { api } from './api';
 
 export interface User {
   id: string;
-  name: string;
+  profile: 'INFLUENCER' | 'ADVERTISER' | 'ADMIN';
+  owner: boolean;
+  completeRegistration?: boolean;
+  firstName: string;
+  lastName: string;
+  status: string;
   email: string;
   avatar?: string;
-  firtname?: string;
-  lastname?: string;
+  username: string;
+  imageUrl?: string;
 }
 
 export interface LoginCredentials {
