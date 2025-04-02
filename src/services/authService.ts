@@ -137,8 +137,22 @@ export class AuthService {
   }
 
   // Utility method to extract token from URL
-  static extractTokenFromURL(): string | null {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('token');
+  static extractTokenFromURL(url?: string): string | null {
+    // Usa a URL fornecida ou a URL atual do navegador
+    const urlString = url || window.location.href;
+
+    try {
+      // Cria um objeto URL para facilitar a manipulação
+      const urlObject = new URL(urlString);
+
+      // Extrai os parâmetros da query
+      const urlParams = new URLSearchParams(urlObject.search);
+
+      // Retorna o parâmetro 'token' ou null se não existir
+      return urlParams.get('token');
+    } catch (error) {
+      console.error('Erro ao extrair token da URL:', error);
+      return null;
+    }
   }
 }
